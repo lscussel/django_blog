@@ -1,4 +1,5 @@
 comandos/walkthrough.txt
+generate_secret_key.py
 
 djangoapp/static/
 djangoapp/media
