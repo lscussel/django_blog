@@ -1,9 +1,26 @@
 from django.contrib.auth.models import User
+from django_summernote.models import AbstractAttachment
 from django.db import models
 from utils.rands import slugify_new
 from utils.images import resize_image
 
 # Create your models here.
+class PostAttachment(AbstractAttachment):
+  def save(self, *args, **kwargs):
+    if not self.name:
+      self.name = self.file.name
+    
+    current_file_name = str(self.file.name)
+    super_save = super().save(*args, **kwargs)
+    file_changed = False
+    if self.file:
+      file_changed = current_file_name != str(self.file.name)
+
+    if file_changed:
+      resize_image(self.file, 900, True, 70)
+
+    return super_save
+
 class Tag(models.Model):
   class Meta:
     verbose_name = 'Tag'
@@ -117,4 +134,4 @@ class Post(models.Model):
     if cover_changed:
       resize_image(self.cover, 900, True, 70)
 
-    return super_save   
+    return super_save
