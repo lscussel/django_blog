@@ -1,0 +1,72 @@
+# configurando git no computador
+git config --global user.name 'Leonardo Scussel'
+git config --global user.email 'leonardoscussel@gmail.com'
+git config --global init.defaultBranch main
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/lscussel/django_blog.git
+git push -u origin main
+
+# configurando o ambiente virtual e instalando o django
+python -m venv venv
+.\venv\Scripts\activate
+pip install pip --upgrade
+pip install django
+cd djangoapp
+django-admin startproject project .
+
+# gerar SECRET_KEY
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+
+# criando containers (na primeira vez)
+docker-compose up --build                       # ou -> docker-compose up --build --force-recreate
+
+# para subir containers que já foram buildados
+docker-compose up                               # ou -> docker-compose up -d
+
+# e para parar containers que foram executados em modo dettach
+docker-compose down
+
+# exemplos de como enviar comandos para dentro dos containers
+docker-compose run --rm djangoapp /bin/sh -c 'echo $SECRET_KEY'
+docker exec -it djangoapp /bin/sh               # esse comando só funciona com o container rodando
+
+# criar superuser para o django, lembrando que estamos executando o python dentro de um container docker
+docker-compose run --rm djangoapp python manage.py createsuperuser
+
+# criar app blog, lembrando que estamos executando o python dentro de um container docker
+docker-compose run --rm djangoapp python manage.py startapp blog
+
+# criar app site_setup, lembrando que estamos executando o python dentro de um container docker
+docker-compose run --rm djangoapp python manage.py startapp site_setup
+
+# executando códigos dentro do container docker, lembrando que ...
+docker-compose run --rm djangoapp python manage.py collectstatic --noinput
+docker-compose run --rm djangoapp python manage.py makemigrations --noinput
+docker-compose run --rm djangoapp python manage.py migrate --noinput
+
+# desfazer migrações, lembrando que ...
+docker-compose run --rm djangoapp python manage.py showmigrations blog          # identificar o número da migração que deseja desfazer
+docker-compose run --rm djangoapp python manage.py migrate blog 0004
+
+# fazer um build do zero
+docker-compose up --build --remove-orphans --renew-anon-volumes --force-recreate
+
+# instalar bibliotecas no seu ambiente virtual python
+pip install python-dotenv
+pip install django-axes
+
+# documentação do django-axes
+# https://django-axes.readthedocs.io/en/latest/2_installation.html
+
+# sigas as orientações de instalação acima e depois...
+docker-compose run --rm djangoapp python manage.py check
+docker-compose run --rm djangoapp python manage.py migrate
+
+# faça as demais configurações dentro do arquivo settings.py
+
+# caso seja bloqueado por várias tentativas de login sem sucesso
+docker-compose run --rm djangoapp python manage.py axes_reset
