@@ -54,35 +54,35 @@ git config --global init.defaultBranch main
 Criando as pastas do projeto e repositório
 
 ```
-mkdir ~/agendarepo ~/agendaapp
+mkdir ~/blogrepo ~/blogapp
 ```
 
 Configurando os repositórios
 
 ```
-cd ~/agendarepo
+cd ~/blogrepo
 git init --bare
 cd ..
-cd ~/agendaapp
+cd ~/blogapp
 git init
-git remote add agendarepo ~/agendarepo
+git remote add blogrepo ~/blogrepo
 git add .
 git commit -m 'Initial'
-git push agendarepo main -u # erro
+git push blogrepo main -u # erro
 ```
 
 No seu computador local
 
 ```
-git remote add agendarepo usuario@IP_SERVIDOR:~/agendarepo
-git push agendarepo main
+git remote add blogrepo usuario@IP_SERVIDOR:~/blogrepo
+git push blogrepo main
 ```
 
 No servidor
 
 ```
-cd ~/agendaapp
-git pull agendarepo main
+cd ~/blogapp
+git pull blogrepo main
 ```
 
 ## Configurando o Postgresql
@@ -104,7 +104,7 @@ sudo systemctl restart postgresql
 ## Criando o local_settings.py no servidor
 
 ```
-nano ~/agendaapp/project/local_settings.py
+nano ~/blogapp/project/local_settings.py
 ```
 
 Cole os dados.
@@ -112,7 +112,7 @@ Cole os dados.
 ## Configurando o Django no servidor
 
 ```
-cd ~/agendaapp
+cd ~/blogapp
 python3.11 -m venv venv
 . venv/bin/activate
 pip install --upgrade pip
